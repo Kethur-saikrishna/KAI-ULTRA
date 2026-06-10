@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>K·AI — Personal Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --bg:       #f5f0e8;
+  --surface:  #faf7f2;
+  --surface2: #f0ebe0;
+  --surface3: #e8e0d0;
+  --panel:    rgba(250,247,242,0.92);
+  --border:   rgba(0,0,0,0.07);
+  --border2:  rgba(0,0,0,0.13);
+  --ink:      #1a1814;
+  --ink2:     #6b6456;
+  --ink3:     #9e9588;
+  --accent:   #c96a2c;
+  --accent2:  #e07d3a;
+  --accentbg: rgba(201,106,44,0.08);
+  --accentborder: rgba(201,106,44,0.22);
+  --blue:     #3b6ea5;
+  --bluebg:   rgba(59,110,165,0.08);
+  --green:    #2e7d5a;
+  --greenbg:  rgba(46,125,90,0.08);
+  --user-bg:  #ffffff;
+  --ai-bg:    #faf7f2;
+  --shadow:   0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow2:  0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+  --r:        12px;
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+/* ── DARK MODE ── */
+[data-theme="dark"] {
+  --bg:       #141210;
+  --surface:  #1c1a17;
+  --surface2: #242118;
+  --surface3: #2e2b22;
+  --panel:    rgba(28,26,23,0.95);
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --ink:      #f0ece4;
+  --ink2:     #b0a898;
+  --ink3:     #786e60;
+  --accent:   #e08040;
+  --accent2:  #f0904a;
+  --accentbg: rgba(224,128,64,0.1);
+  --accentborder: rgba(224,128,64,0.25);
+  --blue:     #6a9fd8;
+  --bluebg:   rgba(106,159,216,0.1);
+  --user-bg:  #1c1a17;
+  --ai-bg:    #141210;
+  --shadow:   0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  --shadow2:  0 2px 8px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* ── RESET ── */
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── HEADER ── */
+header {
+  flex-shrink: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 20;
+}
+
+.h-left { display:flex; align-items:center; gap:10px; }
+
+.logo-mark {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--ink);
+  display: flex; align-items:center; justify-content:center;
+  flex-shrink: 0;
+}
+.logo-mark svg { width:16px; height:16px; fill: var(--bg); }
+
+.logo-name {
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--ink);
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+.logo-name em { font-style:normal; color: var(--accent); }
+
+.model-chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink3);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 9px;
+  letter-spacing: 0.02em;
+}
+
+.h-right { display:flex; align-items:center; gap:6px; }
+
+.h-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--ink3);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items:center; justify-content:center;
+  transition: all 0.15s;
+}
+.h-btn:hover {
+  background: var(--surface2);
+  border-color: var(--border);
+  color: var(--ink);
+}
+
+/* ── MAIN LAYOUT ── */
+.layout {
+  flex:1;
+  display:flex;
+  overflow:hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 228px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+@media(max-width:680px){.sidebar{display:none;}}
+
+.sb-top {
+  padding: 14px 12px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.new-chat-btn {
+  width: 100%;
+  display: flex; align-items:center; gap:8px;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--r);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.new-chat-btn:hover { opacity: 0.85; }
+.new-chat-btn svg { width:14px; height:14px; fill: var(--bg); flex-shrink:0; }
+
+.sb-section {
+  padding: 14px 14px 6px;
+}
+.sb-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 6px;
+}
+
+.mode-list { display:flex; flex-direction:column; gap:2px; }
+
+.mode-btn {
+  display: flex; align-items:center; gap:9px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  color: var(--ink2);
+  font-size: 12.5px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  width: 100%;
+}
+.mode-btn:hover { background: var(--surface2); color: var(--ink); }
+.mode-btn.active {
+  background: var(--accentbg);
+  color: var(--accent);
+  font-weight: 500;
+}
+.mode-btn .mi { width:16px; text-align:center; font-size:14px; flex-shrink:0; }
+
+.sb-divider { height:1px; background: var(--border); margin: 8px 0; }
+
+.qp-list { display:flex; flex-direction:column; gap:1px; padding:0 4px; }
+.qp-btn {
+  padding: 7px 8px;
+  border-radius: 7px;
+  background: none;
+  border: none;
+  color: var(--ink2);
+  font-size: 12px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+.qp-btn:hover { background: var(--surface2); color: var(--ink); }
+
+/* ── CHAT COLUMN ── */
+.chat-col {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  min-width:0;
+}
+
+/* ── WELCOME ── */
+#welcome {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding: 32px 20px;
+  gap: 28px;
+  overflow-y:auto;
+}
+
+.w-head { text-align:center; }
+.w-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 38px);
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.w-title span { color: var(--accent); }
+.w-sub {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--ink2);
+  line-height: 1.6;
+  max-width: 380px;
+  margin-left:auto; margin-right:auto;
+}
+
+.cap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.cap-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px;
+  display:flex; flex-direction:column; gap:5px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.cap-card:hover {
+  border-color: var(--border2);
+  box-shadow: var(--shadow2);
+  transform: translateY(-1px);
+}
+.cap-icon { font-size:20px; }
+.cap-title { font-size:12.5px; font-weight:600; color: var(--ink); }
+.cap-desc { font-size:11.5px; color: var(--ink2); line-height:1.4; }
+
+.starter-chips {
+  display:flex; flex-wrap:wrap; gap:7px; justify-content:center;
+  max-width:460px;
+}
+.s-chip {
+  padding: 7px 14px;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--ink2);
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: var(--shadow);
+}
+.s-chip:hover {
+  background: var(--accentbg);
+  border-color: var(--accentborder);
+  color: var(--accent);
+}
+
+/* ── MESSAGES ── */
+#chat {
+  flex:1;
+  overflow-y:auto;
+  padding: 20px 0 8px;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  scroll-behavior:smooth;
+}
+#chat::-webkit-scrollbar { width:4px; }
+#chat::-webkit-scrollbar-thumb { background: var(--surface3); border-radius:2px; }
+
+.msg-group {
+  padding: 6px 20px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  animation: msgIn 0.25s ease;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+@keyframes msgIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+
+.msg-av {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  margin-top: 3px;
+  display:flex; align-items:center; justify-content:center;
+  font-size: 12px;
+  font-weight: 600;
+}
+.msg-group.ai .msg-av {
+  background: var(--ink);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-style: italic;
+}
+.msg-group.user .msg-av {
+  background: var(--accentbg);
+  border: 1px solid var(--accentborder);
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+.msg-body { flex:1; min-width:0; }
+.msg-sender {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 5px;
+}
+
+.msg-content {
+  font-size: 14px;
+  line-height: 1.72;
+  color: var(--ink);
+}
+
+/* Markdown inside msg-content */
+.msg-content p { margin: 5px 0; }
+.msg-content p:first-child { margin-top:0; }
+.msg-content strong { font-weight:600; color: var(--ink); }
+.msg-content em { color: var(--ink2); }
+.msg-content h1,.msg-content h2 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 18px;
+  margin: 14px 0 5px;
+  color: var(--ink);
+}
+.msg-content h3 {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink2);
+  margin: 12px 0 4px;
+}
+.msg-content code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--accent);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.msg-content pre {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 10px 0;
+  overflow-x: auto;
+  box-shadow: var(--shadow);
+}
+.msg-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12.5px;
+  color: var(--ink);
+  line-height: 1.65;
+}
+.msg-content ul,.msg-content ol { padding-left:20px; margin:6px 0; }
+.msg-content li { margin:3px 0; }
+.msg-content hr { border:none; border-top:1px solid var(--border2); margin:12px 0; }
+.msg-content table {
+  width:100%; border-collapse:collapse;
+  font-size:12.5px; margin:10px 0;
+  border-radius:8px; overflow:hidden;
+  border: 1px solid var(--border2);
+}
+.msg-content th {
+  background: var(--surface2);
+  padding: 7px 12px;
+  text-align:left;
+  font-size:11px; font-weight:600;
+  letter-spacing:0.04em; text-transform:uppercase;
+  color: var(--ink2);
+  border-bottom: 1px solid var(--border2);
+}
+.msg-content td {
+  padding:7px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink2);
+}
+.msg-content tr:last-child td { border-bottom:none; }
+.msg-content a { color: var(--blue); text-decoration:none; }
+.msg-content a:hover { text-decoration:underline; }
+.msg-content blockquote {
+  border-left: 3px solid var(--accentborder);
+  padding: 6px 14px;
+  margin: 8px 0;
+  color: var(--ink2);
+  font-style: italic;
+  background: var(--accentbg);
+  border-radius: 0 6px 6px 0;
+}
+
+/* Attached media */
+.attach-img {
+  max-width: 260px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border2);
+  display:block;
+  box-shadow: var(--shadow);
+}
+.attach-file-chip {
+  display:inline-flex; align-items:center; gap:7px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 6px 11px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--ink2);
+}
+
+/* Msg actions */
+.msg-actions {
+  display:flex; gap:5px; margin-top:8px;
+  opacity:0; transition:opacity 0.15s;
+}
+.msg-group:hover .msg-actions { opacity:1; }
+.act-btn {
+  font-size:11.5px;
+  color: var(--ink3);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 3px 9px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.15s;
+}
+.act-btn:hover { background:var(--surface2); color:var(--ink); border-color:var(--border2); }
+
+/* Typing */
+.typing-dots {
+  display:flex; gap:5px; align-items:center;
+  padding: 4px 0;
+}
+.typing-dots span {
+  width:7px; height:7px; border-radius:50%;
+  background: var(--ink3);
+  animation: tdot 1.2s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:.15s;}
+.typing-dots span:nth-child(3){animation-delay:.3s;}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-5px);opacity:1}}
+
+/* ── ATTACHMENT TRAY ── */
+#tray {
+  display:none;
+  gap:8px; flex-wrap:wrap;
+  padding: 8px 20px 0;
+  max-width:800px; margin:0 auto; width:100%;
+}
+#tray.show { display:flex; }
+
+.tray-thumb {
+  position:relative;
+  border-radius:8px; overflow:hidden;
+  border: 1px solid var(--border2);
+  box-shadow: var(--shadow);
+}
+.tray-thumb img { width:52px; height:52px; object-fit:cover; display:block; }
+.tray-file {
+  display:flex; align-items:center; gap:7px;
+  padding: 6px 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  font-size:12px; color:var(--ink2);
+}
+.tray-rm {
+  position:absolute; top:3px; right:3px;
+  width:16px; height:16px; border-radius:50%;
+  background:rgba(0,0,0,0.6); color:#fff;
+  font-size:9px; border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  line-height:1;
+}
+
+/* ── INPUT ZONE ── */
+.input-zone {
+  flex-shrink:0;
+  padding: 10px 20px 16px;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.input-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.tool-bar {
+  display:flex; gap:5px; margin-bottom:8px; flex-wrap:wrap;
+}
+.t-btn {
+  display:flex; align-items:center; gap:5px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--ink2);
+  font-size: 12px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: var(--shadow);
+}
+.t-btn:hover { background:var(--surface2); color:var(--ink); }
+.t-btn .ti { font-size:13px; }
+.t-btn.danger { color:#d9534f; }
+.t-btn.danger:hover { background:rgba(217,83,79,0.08); border-color:rgba(217,83,79,0.25); }
+
+.input-wrap {
+  background: var(--user-bg);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 11px 11px 11px 15px;
+  display:flex; gap:8px; align-items:flex-end;
+  box-shadow: var(--shadow2);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-wrap:focus-within {
+  border-color: var(--accentborder);
+  box-shadow: var(--shadow2), 0 0 0 3px var(--accentbg);
+}
+textarea {
+  flex:1;
+  background:none; border:none; outline:none;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  resize:none;
+  min-height:22px; max-height:140px;
+  line-height:1.55;
+  padding-top:1px;
+}
+textarea::placeholder { color:var(--ink3); }
+
+.send-btn {
+  width:36px; height:36px; flex-shrink:0;
+  border-radius:9px;
+  background: var(--ink);
+  border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.send-btn:hover { opacity:0.85; }
+.send-btn:active { transform:scale(0.93); }
+.send-btn:disabled { opacity:0.3; cursor:not-allowed; }
+.send-btn svg { fill: var(--bg); width:16px; height:16px; }
+
+.input-footer {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top: 7px; padding: 0 1px;
+}
+.input-hint { font-family:var(--font-mono); font-size:10px; color:var(--ink3); }
+#tcount { font-family:var(--font-mono); font-size:10px; color:var(--ink3); }
+
+/* ── SANDBOX BANNER ── */
+#sandbox-banner {
+  display:none;
+  position:fixed; bottom:0; left:0; right:0; z-index:999;
+  background: var(--ink);
+  padding: 12px 16px;
+  gap:10px;
+  align-items:center; justify-content:space-between;
+  font-size:13px; color: var(--bg);
+  font-family: var(--font-body);
+}
+.sb-open-btn {
+  background: var(--accent);
+  color:#fff; border:none; border-radius:8px;
+  padding:7px 14px;
+  font-family:var(--font-body); font-weight:600; font-size:12px;
+  cursor:pointer; white-space:nowrap; flex-shrink:0;
+}
+.sb-x {
+  background:rgba(255,255,255,0.15); color:var(--bg);
+  border:none; border-radius:6px; padding:5px 9px;
+  cursor:pointer; font-size:12px; flex-shrink:0;
+}
+
+/* ── CAMERA MODAL ── */
+#cam-modal {
+  display:none;
+  position:fixed; inset:0; z-index:100;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(8px);
+  align-items:center; justify-content:center;
+}
+#cam-modal.open { display:flex; }
+.cam-box {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 18px;
+  padding:20px;
+  display:flex; flex-direction:column; align-items:center; gap:14px;
+  width:90%; max-width:420px;
+  box-shadow: var(--shadow2);
+}
+#cam-video {
+  width:100%; border-radius:10px;
+  background:#000; aspect-ratio:4/3; object-fit:cover;
+  border: 1px solid var(--border2);
+}
+.cam-row { display:flex; gap:8px; }
+.cam-snap {
+  padding:9px 22px; border-radius:9px;
+  background: var(--ink); color: var(--bg);
+  border:none; font-family:var(--font-body); font-weight:500; font-size:13px;
+  cursor:pointer; transition:opacity 0.15s;
+}
+.cam-snap:hover { opacity:0.85; }
+.cam-cancel {
+  padding:9px 16px; border-radius:9px;
+  background: var(--surface2); border:1px solid var(--border2);
+  color:var(--ink2); font-family:var(--font-body); font-size:13px; cursor:pointer;
+}
+canvas#cam-canvas { display:none; }
+
+input[type=file]{ display:none; }
+
+/* Scrollbars */
+#welcome::-webkit-scrollbar { width:3px; }
+#welcome::-webkit-scrollbar-thumb { background:var(--surface3); border-radius:2px; }
+.sidebar::-webkit-scrollbar { width:3px; }
+.sidebar::-webkit-scrollbar-thumb { background:var(--surface3); border-radius:2px; }
+
+/* Mode indicator */
+.mode-indicator {
+  font-family: var(--font-mono);
+  font-size:10px; color:var(--ink3);
+  padding:2px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="h-left">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L20 8.5v7L12 19.82 4 15.5v-7L12 4.18z"/></svg>
+    </div>
+    <div class="logo-name">K·<em>AI</em></div>
+    <div class="model-chip">claude-sonnet-4</div>
+  </div>
+  <div class="h-right">
+    <span id="mode-indicator" class="mode-indicator">general mode</span>
+    <button class="h-btn" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">☀</button>
+    <button class="h-btn" onclick="startNewChat()" title="New chat">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 10H6.17L5 14.17V5h14v8z"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- Layout -->
+<div class="layout">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sb-top">
+      <button class="new-chat-btn" onclick="startNewChat()">
+        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        New conversation
+      </button>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Mode</div>
+      <div class="mode-list">
+        <button class="mode-btn active" onclick="setMode('general',this)"><span class="mi">✦</span>General</button>
+        <button class="mode-btn" onclick="setMode('code',this)"><span class="mi">⌨</span>Code & Debug</button>
+        <button class="mode-btn" onclick="setMode('vision',this)"><span class="mi">◎</span>Vision</button>
+        <button class="mode-btn" onclick="setMode('hardware',this)"><span class="mi">⊕</span>Hardware / ESP32</button>
+        <button class="mode-btn" onclick="setMode('strategy',this)"><span class="mi">◈</span>Strategy</button>
+        <button class="mode-btn" onclick="setMode('learn',this)"><span class="mi">◉</span>Learn</button>
+      </div>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <div class="sb-section">
+      <div class="sb-label">Quick prompts</div>
+      <div class="qp-list">
+        <button class="qp-btn" onclick="quickSend('Analyze this image in detail')">🖼 Analyze image</button>
+        <button class="qp-btn" onclick="quickSend('Debug my ESP32 firmware code and explain the issue')">🐛 Debug ESP32 code</button>
+        <button class="qp-btn" onclick="quickSend('Summarize and extract key points from this file')">📄 Summarize file</button>
+        <button class="qp-btn" onclick="quickSend('Give me a detailed project roadmap with milestones')">🗺 Project roadmap</button>
+        <button class="qp-btn" onclick="quickSend('Optimize my BOM cost under ₹500 for embedded project')">💰 BOM optimization</button>
+        <button class="qp-btn" onclick="quickSend('Correct and improve my English for professional use')">🗣 Improve my English</button>
+        <button class="qp-btn" onclick="quickSend('Explain this circuit schematic step by step')">⚡ Explain circuit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat column -->
+  <div class="chat-col">
+
+    <!-- Welcome -->
+    <div id="welcome">
+      <div class="w-head">
+        <div class="w-title">Good to see you, <span>K.</span></div>
+        <div class="w-sub">Your personal intelligence layer — text, vision, code, files, hardware. All in one.</div>
+      </div>
+
+      <div class="cap-grid">
+        <div class="cap-card" onclick="triggerCamera()">
+          <div class="cap-icon">📷</div>
+          <div class="cap-title">Camera</div>
+          <div class="cap-desc">Capture live photos for instant AI analysis</div>
+        </div>
+        <div class="cap-card" onclick="triggerImageUpload()">
+          <div class="cap-icon">🖼</div>
+          <div class="cap-title">Image Upload</div>
+          <div class="cap-desc">Diagrams, schematics, screenshots, photos</div>
+        </div>
+        <div class="cap-card" onclick="triggerFileUpload()">
+          <div class="cap-icon">📁</div>
+          <div class="cap-title">File Reading</div>
+          <div class="cap-desc">PDF, code, CSV, JSON — full context</div>
+        </div>
+        <div class="cap-card">
+          <div class="cap-icon">🧠</div>
+          <div class="cap-title">Session Memory</div>
+          <div class="cap-desc">Full conversation retained across all turns</div>
+        </div>
+      </div>
+
+      <div class="starter-chips">
+        <div class="s-chip" onclick="quickSend('What can you help me with today?')">Get started</div>
+        <div class="s-chip" onclick="quickSend('Help me design a sub-₹500 pneumatic compression circuit using NE555')">NE555 circuit</div>
+        <div class="s-chip" onclick="quickSend('Explain TinyML for ESP32-S3')">TinyML basics</div>
+        <div class="s-chip" onclick="quickSend('Review my project concept for NOVA EAR ECG earring')">NOVA EAR</div>
+        <div class="s-chip" onclick="quickSend('Help me practice professional English self-introduction')">English practice</div>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div id="chat" style="display:none;"></div>
+
+    <!-- Attachment tray -->
+    <div id="tray"></div>
+
+    <!-- Input zone -->
+    <div class="input-zone">
+      <div class="input-inner">
+        <div class="tool-bar">
+          <button class="t-btn" onclick="triggerCamera()"><span class="ti">📷</span>Camera</button>
+          <button class="t-btn" onclick="triggerImageUpload()"><span class="ti">🖼</span>Image</button>
+          <button class="t-btn" onclick="triggerFileUpload()"><span class="ti">📎</span>File</button>
+          <button class="t-btn danger" id="clear-att-btn" style="display:none;" onclick="clearAttachments()"><span class="ti">✕</span>Clear</button>
+        </div>
+        <div class="input-wrap">
+          <textarea id="input" placeholder="Message K·AI…" rows="1"
+            onkeydown="handleKey(event)" oninput="autoResize(this);updateCount();"></textarea>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+        <div class="input-footer">
+          <div class="input-hint">↵ send · ⇧↵ newline</div>
+          <div id="tcount"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Camera Modal -->
+<div id="cam-modal">
+  <div class="cam-box">
+    <video id="cam-video" autoplay playsinline></video>
+    <canvas id="cam-canvas"></canvas>
+    <div class="cam-row">
+      <button class="cam-snap" onclick="snapPhoto()">📸 Capture</button>
+      <button class="cam-cancel" onclick="closeCamera()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sandbox Banner -->
+<div id="sandbox-banner" style="display:flex;">
+  <span>⚠ Camera & file upload need a real browser tab — this preview is sandboxed.</span>
+  <button class="sb-open-btn" onclick="openFullApp()">Open in Browser ↗</button>
+  <button class="sb-x" onclick="document.getElementById('sandbox-banner').style.display='none'">✕</button>
+</div>
+
+<!-- Hidden file inputs -->
+<input type="file" id="img-inp" accept="image/*" capture="environment" onchange="handleImgUpload(event)">
+<input type="file" id="file-inp" accept=".pdf,.txt,.md,.js,.py,.c,.cpp,.h,.json,.csv,.html,.css" onchange="handleFileRead(event)">
+
+<script>
+// ── THEME ──
+let darkMode = false;
+function toggleTheme(){
+  darkMode = !darkMode;
+  document.body.setAttribute('data-theme', darkMode ? 'dark' : '');
+  document.getElementById('theme-btn').textContent = darkMode ? '☾' : '☀';
+}
+
+// ── STATE ──
+let history = [], attachments = [], loading = false, mode = 'general';
+let camStream = null;
+
+// ── SYSTEM PROMPTS ──
+const BASE_PROMPT = `You are K·AI — a highly intelligent personal AI assistant built exclusively for K.
+
+About K:
+- ECE graduate (Embedded Systems & IoT), Hyderabad, India. B.Tech from AAR Mahaveer Engineering College, JNTUH, 2022–2026
+- Expert in ESP32/ESP32-S3 firmware development, hardware prototyping, IoT systems
+- Active projects: NOVA EAR (ECG earring, nRF52832+MAX30003+AD8232), NE555 pneumatic compression therapy device (sub-₹500 BOM, no MCU), Varicose vein IoT wearable (ESP32-S3 with pressure/SpO2/temp/IMU), Vital Nova Pod (smart infant monitor, major project), Vita Watch (AI health wearable)
+- Interests: Edge AI, TinyML, wearable health tech, entrepreneurship, personal development
+- Working on improving spoken English for professional contexts
+- Prefers concise, structured responses with headers and bold emphasis
+
+Your behavior:
+- Highly intelligent, sharp, and deeply contextual — never generic
+- Adapt tone: technical for hardware/code, calm for stress, strategic for planning
+- Use ₹ for costs; mention Indian suppliers (Robu, Robocraze, LCSC, ElectroCraft) when relevant
+- When analyzing images: describe thoroughly, identify components, circuits, text, or anomalies
+- When reading files: extract key insights, summarize clearly, answer questions precisely
+- Format responses well: use **bold** for key terms, headers for structure, code blocks for code
+- Never pad responses with filler — be direct and useful
+- Remember full conversation context across all turns`;
+
+const MODE_PROMPTS = {
+  general: '',
+  code: '\n\nMODE: Code & Debug. Prioritize working, clean, commented code. Point out bugs clearly. Suggest optimizations.',
+  vision: '\n\nMODE: Vision Analysis. Analyze every visual detail — objects, text, components, anomalies, spatial relationships.',
+  hardware: '\n\nMODE: Hardware Engineering. Focus on schematics, component specs, BOM optimization, power budgets, firmware architecture.',
+  strategy: '\n\nMODE: Strategy. Think like a product strategist + entrepreneur. Give frameworks, timelines, and execution steps.',
+  learn: '\n\nMODE: Learning. Teach step by step with clear examples and analogies. Build understanding progressively.'
+};
+
+function getSysPrompt(){ return BASE_PROMPT + (MODE_PROMPTS[mode]||''); }
+
+// ── MODE ──
+function setMode(m, btn){
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('mode-indicator').textContent = m+' mode';
+}
+
+// ── SANDBOX ──
+function inIframe(){ try{return window.self!==window.top;}catch(e){return true;} }
+function openFullApp(){
+  const html = document.documentElement.outerHTML;
+  const blob = new Blob([html],{type:'text/html'});
+  window.open(URL.createObjectURL(blob),'_blank');
+}
+function triggerCamera(){ if(inIframe()){showBanner();return;} openCamera(); }
+function triggerImageUpload(){ if(inIframe()){showBanner();return;} document.getElementById('img-inp').click(); }
+function triggerFileUpload(){ if(inIframe()){showBanner();return;} document.getElementById('file-inp').click(); }
+function showBanner(){ document.getElementById('sandbox-banner').style.display='flex'; }
+
+// ── UTILS ──
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function autoResize(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,140)+'px'; }
+function handleKey(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
+function updateCount(){
+  const n=document.getElementById('input').value.length;
+  document.getElementById('tcount').textContent = n>8?`~${Math.round(n/4)} tok`:'';
+}
+function quickSend(t){ document.getElementById('input').value=t; sendMessage(); }
+
+// ── MARKDOWN ──
+function md(text){
+  text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_,l,c)=>
+    `<pre><code class="lang-${l}">${esc(c.trim())}</code></pre>`);
+  text = text.replace(/`([^`\n]+)`/g,'<code>$1</code>');
+  text = text.replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>');
+  text = text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  text = text.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
+  text = text.replace(/^### (.+)$/gm,'<h3>$1</h3>');
+  text = text.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+  text = text.replace(/^# (.+)$/gm,'<h2>$1</h2>');
+  text = text.replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>');
+  text = text.replace(/^---+$/gm,'<hr>');
+  // Tables
+  text = text.replace(/((?:^\|.+\|\n?)+)/gm, t=>{
+    const rows = t.trim().split('\n').filter(r=>!/^\|[-:\s|]+\|$/.test(r));
+    if(!rows.length) return t;
+    const mkRow=(row,tag)=>'<tr>'+row.split('|').filter((_,i,a)=>i>0&&i<a.length-1).map(c=>`<${tag}>${c.trim()}</${tag}>`).join('')+'</tr>';
+    const [h,...body]=rows;
+    return `<table><thead>${mkRow(h,'th')}</thead><tbody>${body.map(r=>mkRow(r,'td')).join('')}</tbody></table>`;
+  });
+  // Lists
+  text = text.replace(/^[-*•] (.+)$/gm,'<li>$1</li>');
+  text = text.replace(/^\d+\. (.+)$/gm,'<li>$1</li>');
+  // Paragraphs — only for plain lines
+  const lines = text.split('\n');
+  let out='', inUl=false;
+  for(const ln of lines){
+    const isLi = ln.trim().startsWith('<li>');
+    const isBlock = /^<(h[123]|pre|table|blockquote|hr|ul|ol)/.test(ln.trim());
+    if(isLi&&!inUl){out+='<ul>';inUl=true;}
+    if(!isLi&&inUl){out+='</ul>';inUl=false;}
+    if(!isLi&&!isBlock&&ln.trim()) out+=`<p>${ln}</p>`;
+    else out+=ln+'\n';
+  }
+  if(inUl) out+='</ul>';
+  return out;
+}
+
+// ── CHAT DOM ──
+function showChat(){
+  document.getElementById('welcome').style.display='none';
+  const c=document.getElementById('chat');
+  c.style.display='flex'; c.style.flexDirection='column';
+}
+function scrollEnd(){ const c=document.getElementById('chat'); c.scrollTop=c.scrollHeight; }
+
+function appendGroup(role, html, withActions=false){
+  showChat();
+  const c=document.getElementById('chat');
+  const g=document.createElement('div');
+  g.className=`msg-group ${role}`;
+  const label = role==='ai' ? 'K·AI' : 'You';
+  g.innerHTML=`
+    <div class="msg-av">${role==='ai'?'K':'K'}</div>
+    <div class="msg-body">
+      <div class="msg-sender">${label}</div>
+      <div class="msg-content">${html}</div>
+      ${withActions?`<div class="msg-actions">
+        <button class="act-btn" onclick="copyMsg(this)">Copy</button>
+        <button class="act-btn" onclick="regenLast()">↺ Regenerate</button>
+      </div>`:''}
+    </div>
+  `;
+  c.appendChild(g);
+  scrollEnd();
+  return g;
+}
+
+let typingEl = null;
+function showTyping(){
+  showChat();
+  const c=document.getElementById('chat');
+  const g=document.createElement('div');
+  g.className='msg-group ai'; g.id='typing-g';
+  g.innerHTML=`<div class="msg-av">K</div>
+  <div class="msg-body">
+    <div class="msg-sender">K·AI</div>
+    <div class="typing-dots"><span></span><span></span><span></span></div>
+  </div>`;
+  c.appendChild(g); scrollEnd();
+}
+function removeTyping(){ const t=document.getElementById('typing-g'); if(t)t.remove(); }
+
+function copyMsg(btn){
+  const txt=btn.closest('.msg-body').querySelector('.msg-content').innerText;
+  navigator.clipboard.writeText(txt);
+  btn.textContent='Copied!';
+  setTimeout(()=>btn.textContent='Copy',1500);
+}
+async function regenLast(){
+  if(loading||history.length<2) return;
+  if(history[history.length-1].role==='assistant') history.pop();
+  const groups=document.querySelectorAll('.msg-group.ai');
+  if(groups.length) groups[groups.length-1].remove();
+  await callAPI();
+}
+
+// ── ATTACHMENTS ──
+function renderTray(){
+  const tray=document.getElementById('tray');
+  const clearBtn=document.getElementById('clear-att-btn');
+  tray.innerHTML='';
+  if(!attachments.length){ tray.classList.remove('show'); clearBtn.style.display='none'; return; }
+  tray.classList.add('show'); clearBtn.style.display='flex';
+  attachments.forEach((a,i)=>{
+    const el=document.createElement('div');
+    if(a.type==='image'){
+      el.className='tray-thumb';
+      el.innerHTML=`<img src="${a.preview}"><button class="tray-rm" onclick="removeAtt(${i})">✕</button>`;
+    } else {
+      el.className='tray-file';
+      el.innerHTML=`📄 ${esc(a.name)} <button class="tray-rm" style="position:static;background:none;color:var(--ink3);border:none;cursor:pointer;font-size:11px;" onclick="removeAtt(${i})">✕</button>`;
+    }
+    tray.appendChild(el);
+  });
+}
+function removeAtt(i){ attachments.splice(i,1); renderTray(); }
+function clearAttachments(){ attachments=[]; renderTray(); }
+
+// ── IMAGE UPLOAD ──
+function handleImgUpload(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    const b64=ev.target.result.split(',')[1];
+    attachments.push({type:'image',data:b64,name:f.name,mediaType:f.type,preview:ev.target.result});
+    renderTray();
+  };
+  r.readAsDataURL(f); e.target.value='';
+}
+
+// ── FILE UPLOAD ──
+function handleFileRead(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    if(f.type==='application/pdf'){
+      const b64=ev.target.result.split(',')[1];
+      attachments.push({type:'file',fileType:'pdf',data:b64,name:f.name,mediaType:'application/pdf'});
+    } else {
+      attachments.push({type:'file',fileType:'text',text:ev.target.result,name:f.name});
+    }
+    renderTray();
+  };
+  if(f.type==='application/pdf') r.readAsDataURL(f);
+  else r.readAsText(f);
+  e.target.value='';
+}
+
+// ── CAMERA ──
+async function openCamera(){
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+    document.getElementById('cam-video').srcObject=camStream;
+    document.getElementById('cam-modal').classList.add('open');
+  } catch(e){ alert('Camera not accessible.'); }
+}
+function closeCamera(){
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  document.getElementById('cam-modal').classList.remove('open');
+}
+function snapPhoto(){
+  const v=document.getElementById('cam-video'),cn=document.getElementById('cam-canvas');
+  cn.width=v.videoWidth; cn.height=v.videoHeight;
+  cn.getContext('2d').drawImage(v,0,0);
+  const durl=cn.toDataURL('image/jpeg',0.9);
+  attachments.push({type:'image',data:durl.split(',')[1],name:'photo.jpg',mediaType:'image/jpeg',preview:durl});
+  renderTray(); closeCamera();
+}
+
+// ── BUILD CONTENT ──
+function buildContent(text){
+  const content=[];
+  for(const a of attachments){
+    if(a.type==='image')
+      content.push({type:'image',source:{type:'base64',media_type:a.mediaType,data:a.data}});
+    else if(a.fileType==='pdf')
+      content.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:a.data}});
+    else
+      content.push({type:'text',text:`[Attached file: ${a.name}]\n\`\`\`\n${a.text}\n\`\`\``});
+  }
+  if(text) content.push({type:'text',text});
+  return content;
+}
+
+function buildUserBubble(text){
+  let html='';
+  for(const a of attachments){
+    if(a.type==='image') html+=`<img class="attach-img" src="${a.preview}" alt="${esc(a.name)}">`;
+    else html+=`<div class="attach-file-chip">📄 ${esc(a.name)}</div>`;
+  }
+  if(text) html+=`<p>${esc(text)}</p>`;
+  return html;
+}
+
+// ── SEND ──
+async function sendMessage(){
+  const inp=document.getElementById('input');
+  const text=inp.value.trim();
+  if((!text&&!attachments.length)||loading) return;
+
+  const bubbleHtml=buildUserBubble(text);
+  const content=buildContent(text);
+  history.push({role:'user',content});
+
+  inp.value=''; inp.style.height='auto'; updateCount();
+  appendGroup('user', bubbleHtml, false);
+  attachments=[]; renderTray();
+
+  await callAPI();
+}
+
+async function callAPI(){
+  loading=true;
+  document.getElementById('send-btn').disabled=true;
+  showTyping();
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:getSysPrompt(),
+        messages:history
+      })
+    });
+    const data=await res.json();
+    removeTyping();
+
+    if(data.error){
+      appendGroup('ai',`<p style="color:#c9402c;">Error: ${esc(data.error.message)}</p>`,false);
+      loading=false; document.getElementById('send-btn').disabled=false; return;
+    }
+
+    const reply=data.content?.[0]?.text||'No response.';
+    history.push({role:'assistant',content:reply});
+    appendGroup('ai', md(reply), true);
+
+  } catch(err){
+    removeTyping();
+    appendGroup('ai','<p style="color:#c9402c;">Connection error — please try again.</p>',false);
+  }
+
+  loading=false;
+  document.getElementById('send-btn').disabled=false;
+  document.getElementById('input').focus();
+}
+
+// ── NEW CHAT ──
+function startNewChat(){
+  history=[]; attachments=[]; renderTray();
+  document.getElementById('chat').innerHTML='';
+  document.getElementById('chat').style.display='none';
+  document.getElementById('welcome').style.display='flex';
+}
+
+// Hide sandbox banner on load if not in iframe
+window.addEventListener('load',()=>{
+  if(!inIframe()) document.getElementById('sandbox-banner').style.display='none';
+});
+</script>
+</body>
+</html>
